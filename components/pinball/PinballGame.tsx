@@ -24,6 +24,7 @@ export function PinballGame() {
   const { addTickets } = useTickets();
   const addTicketsRef = useRef(addTickets);
   const [hud, setHud] = useState<Hud>({ phase: "attract", score: 0, high: 0, ball: 0, mult: 1, letters: "0000000", combo: 0, newHigh: false, tickets: 0, lastBonus: 0 });
+  const [paidTickets, setPaidTickets] = useState(0);
   const [soundOn, setSoundOn] = useState(true);
   const [touch, setTouch] = useState(false);
 
@@ -58,7 +59,9 @@ export function PinballGame() {
         renderer.handleEvents(events, engine);
         sound.handleEvents(events);
         for (const e of events) {
-          if (e.type === "gameover" && e.tickets > 0) addTicketsRef.current(e.tickets);
+          if (e.type === "start") setPaidTickets(0);
+          // The wallet is async and fails closed, so only report tickets it actually saved.
+          if (e.type === "gameover" && e.tickets > 0) void addTicketsRef.current(e.tickets).then((saved) => { if (saved) setPaidTickets(e.tickets); });
           if (e.type !== "flipper" && e.type !== "bumper" && e.type !== "sling") important = true;
         }
       }
@@ -163,7 +166,7 @@ export function PinballGame() {
                 <p className="eyebrow">Game over</p>
                 <p className={s.finalScore}>{fmt(hud.score)}</p>
                 {hud.newHigh && <p className={s.badge}>New high score</p>}
-                {hud.tickets > 0 && <p className={s.tickets}>+{fmt(hud.tickets)} tickets added to your wallet</p>}
+                {paidTickets > 0 && <p className={s.tickets}>+{fmt(paidTickets)} tickets added to your wallet</p>}
                 <button type="button" className={`${s.pill} ${s.playAgain} glass`} onClick={start}>Play again</button>
               </div>
             )}

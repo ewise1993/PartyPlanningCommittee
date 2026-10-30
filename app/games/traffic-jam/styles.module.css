@@ -1,0 +1,23 @@
+
+.page{padding:48px 0}.heading{text-align:center;margin-bottom:48px}.heading h1{margin:12px 0 24px}.layout{display:grid;grid-template-columns:minmax(0,600px) minmax(0,400px);justify-content:center;gap:24px;align-items:start}
+.boardPanel{padding:40px 32px;position:relative}
+.board{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(6,minmax(0,1fr));aspect-ratio:1;position:relative;gap:5px}.cell{border:1px solid #ffffff60}
+.car{z-index:1;margin:0;padding:0;border:0;background:transparent;color:#fff;position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;font:inherit;min-width:0;min-height:0;outline:none}
+.carSurface{position:absolute;inset:0;background:rgba(255,255,255,.25);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);clip-path:var(--vehicle-clip);pointer-events:none}
+.car[aria-pressed=true] .carSurface{background:#fff}.car[aria-pressed=true]{color:#26342f}.carLabel{position:relative;pointer-events:none}.car:focus-visible .carSurface{background:#fff}.car:focus-visible{color:#26342f}
+.exit{position:absolute;right:1px;top:42%;writing-mode:vertical-rl;font-size:var(--type-size-subheading);letter-spacing:.18em}.controls{padding:var(--text-inset);display:flex;flex-direction:column;gap:20px}.controls h2{margin-top:-8px}.actions{display:flex;gap:12px;flex-wrap:wrap}.controls button,.backButton{font:inherit;color:#fff;background:var(--glass-background);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-pill);height:36px;padding:0 14px;cursor:pointer}.controls button:disabled{cursor:default;border-style:dashed;border-color:#ffffff30}.controls button:focus-visible,.backButton:focus-visible{outline:none;box-shadow:inset 0 0 0 2px currentColor}.backButton{display:inline-flex;align-self:flex-start;justify-content:center;align-items:center;text-decoration:none}.backButton:hover,.controls button:hover{border-color:rgba(255,255,255,.4)}
+@media(max-width:800px){.layout{grid-template-columns:minmax(0,600px)}.boardPanel{padding:32px 24px}.page{padding-top:32px}}
+/* Individual vehicle silhouettes and subtractive glazing. */
+.vehicleYou{--vehicle-clip:url(#vehicle-You)}
+.vehicleA{--vehicle-clip:url(#vehicle-A)}
+.vehicleB{--vehicle-clip:url(#vehicle-B)}
+.vehicleC{--vehicle-clip:url(#vehicle-C)}
+.vehicleD{--vehicle-clip:url(#vehicle-D)}
+.vehicleE{--vehicle-clip:url(#vehicle-E)}
+
+
+
+.carEdge{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.car[aria-pressed=true] .carEdge{visibility:hidden}
+
+.mobileControls{display:none}.controls button,.backButton{min-height:44px;height:auto}.mobileControls button{font:inherit;color:#fff;background:var(--glass-background);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid #ffffff33;border-radius:var(--radius-pill);min-height:44px;padding:0 14px}.mobileControls button:disabled{border-style:dashed}.mobileControls button:focus-visible{outline:none;box-shadow:inset 0 0 0 2px #fff}
+@media(max-width:800px){.boardPanel{padding:0 0 24px}.board{gap:4px}.exit{right:-12px}.controls{padding:24px 0}.mobileControls{display:flex;align-items:center;justify-content:center;gap:12px;position:sticky;top:8px;z-index:5;margin-bottom:20px}.heading{margin-bottom:24px}}
