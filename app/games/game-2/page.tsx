@@ -3,7 +3,7 @@ import { PinballGame } from "@/components/pinball/PinballGame";
 
 export const metadata: Metadata = {
   title: "Pinball · Hot Welcome Arcade",
-  description: "A retro pinball machine. Three balls, flashing lights, skill lanes, and a JACKPOT to spell.",
+  description: "A glass pinball machine. Three balls, fuchsia lights, skill lanes, and a JACKPOT to spell.",
 };
 
 export default function PinballPage() {

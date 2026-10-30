@@ -132,7 +132,7 @@ export function PinballGame() {
 
   const playing = hud.phase === "ready" || hud.phase === "play" || hud.phase === "drain";
   return (
-    <section className={s.page}>
+    <section className={s.page} data-arcade-theme="glass">
       <div className={s.topRow}>
         <div>
           <p className="eyebrow">Game 02 · Hot Welcome Arcade</p>
@@ -203,7 +203,7 @@ export function PinballGame() {
             {LETTERS.map((ch, i) => <span key={ch} className={hud.letters[i] === "1" ? s.letterLit : s.letter}>{ch}</span>)}
           </div>
           <div className={s.high}><span className={s.label}>High score</span><span className={s.stat}>{fmt(hud.high)}</span></div>
-          <p className={s.rules}>Light all three skill lanes to raise the multiplier. Gold targets, orbits and a cleared bank each light a JACKPOT letter. Spell it for 50,000 × your multiplier.</p>
+          <p className={s.rules}>Light all three skill lanes to raise the multiplier. Pink targets, orbits and a cleared bank each light a JACKPOT letter. Spell it for 50,000 × your multiplier.</p>
         </aside>
       </div>
     </section>
