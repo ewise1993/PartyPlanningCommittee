@@ -35,12 +35,12 @@ import { useTickets } from "@/components/TicketProvider";
 // Inside your component:
 const { tickets, ready, addTickets, spendTickets } = useTickets();
 // Call from game events, never while rendering:
-// addTickets(10); // true on success
-// spendTickets(5); // false if insufficient tickets or invalid amount
+// await addTickets(10); // true on success
+// await spendTickets(5); // false if insufficient tickets or invalid amount
 ```
 
-Both functions return a boolean. Amounts must be nonnegative safe integers. Invalid amounts, insufficient funds, and overflow leave the balance unchanged. Disable wallet-dependent actions until `ready` is true. Ref-backed updates prevent rapid calls within one page from spending the same balance twice.
+Both functions return a Promise<boolean>; await their result. Amounts must be nonnegative safe integers. Invalid amounts, insufficient funds, and overflow leave the balance unchanged. Disable wallet-dependent actions until `ready` is true. Cross-tab locks prevent simultaneous calls from spending the same balance twice. `awardTicketsOnce(id, amount)` persists an award identifier atomically with the balance; use a unique identifier per puzzle. Traffic Jam saves valid board state and undo history locally and awards puzzle 1 only once per browser wallet.
 
-The wallet starts at zero and persists in localStorage for this browser and origin. It is a simple prototype wallet, editable by the player, with no account, server validation, or concurrent-tab transaction guarantees. If browser storage is blocked it works in memory for the current session.
+The wallet starts at zero and persists in localStorage for this browser and origin. It is a simple prototype wallet, editable by the player, with no account or server validation. Transactions use Web Locks and reload the current persisted balance inside the lock; storage events synchronize other tabs. If storage or Web Locks are unavailable, transactions fail without reporting success.
 
 The header catalogue button defaults to `http://localhost:3000/`, the local prototype catalogue. Set `NEXT_PUBLIC_PROTOTYPE_CATALOGUE_URL` to the hosted catalogue URL when deploying.
