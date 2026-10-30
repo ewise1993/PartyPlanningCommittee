@@ -1,14 +1,17 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { SelfieBooth } from "@/components/SelfieBooth";
 import { useTickets } from "@/components/TicketProvider";
 import { createGame, isOpen, pause, progress, steer, step, togglePause, type DirName, type Game, type Mover, type Status } from "@/lib/confetti-chase";
 
-// Swap or add team photos here: transparent PNG head cutouts in public/game-1/.
+// Swap or add team photos here: 384px oval face crops (transparent corners) in public/game-1/.
 const TEAM = [
   { src: "/game-1/face-1.png", name: "Teammate 1" },
   { src: "/game-1/face-2.png", name: "Teammate 2" },
   { src: "/game-1/face-3.png", name: "Teammate 3" },
 ];
+const SELFIE_KEY = "hot-welcome-arcade:selfie";
+const CHASERS = 2;
 const POINTS_PER_TICKET = 100;
 const CONFETTI = ["#ffd36e", "#ff8fd1", "#8fe3ff", "#b6ff9e", "#ffffff"];
 const KEYS: Record<string, DirName> = {
@@ -27,10 +30,22 @@ export function ConfettiChase() {
   const [hero, setHero] = useState<number | null>(null);
   const [hud, setHud] = useState<Hud>({ score: 0, lives: 3, level: 1, status: "ready" });
   const [earned, setEarned] = useState(0);
+  const [selfie, setSelfie] = useState<string | null>(null);
+  const [booth, setBooth] = useState(false);
+  // A saved selfie joins the roster, so it can play or be one of the chasers.
+  const roster = useMemo(() => selfie ? [...TEAM, { src: selfie, name: "You" }] : TEAM, [selfie]);
 
   useEffect(() => {
-    facesRef.current = TEAM.map(({ src }) => Object.assign(new Image(), { src }));
+    try { setSelfie(localStorage.getItem(SELFIE_KEY)); } catch { /* storage blocked: the booth still works for this visit */ }
   }, []);
+  useEffect(() => {
+    facesRef.current = roster.map(({ src }) => Object.assign(new Image(), { src }));
+  }, [roster]);
+
+  const saveSelfie = (dataUrl: string | null) => {
+    setSelfie(dataUrl);
+    try { if (dataUrl) localStorage.setItem(SELFIE_KEY, dataUrl); else localStorage.removeItem(SELFIE_KEY); } catch { /* kept in memory only */ }
+  };
 
   const start = useCallback((index: number) => {
     gameRef.current = createGame();
@@ -45,7 +60,8 @@ export function ConfettiChase() {
     if (hero === null) return;
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d")!;
-    const chaserFaces = TEAM.map((_, i) => i).filter((i) => i !== hero);
+    // With more people than chaser spots, a random pair gives chase each time.
+    const chaserFaces = roster.map((_, i) => i).filter((i) => i !== hero).sort(() => Math.random() - 0.5).slice(0, CHASERS);
     let raf = 0, last = performance.now();
     const frame = (now: number) => {
       const game = gameRef.current!;
@@ -67,7 +83,7 @@ export function ConfettiChase() {
       window.removeEventListener("blur", away);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [hero]);
+  }, [hero, roster]);
 
   // Tickets are paid out once per finished run.
   useEffect(() => {
@@ -112,14 +128,27 @@ export function ConfettiChase() {
   };
   const press = (dir: DirName) => { if (gameRef.current) steer(gameRef.current, dir); };
 
+  if (booth) {
+    return <SelfieBooth onCancel={() => setBooth(false)} onSave={(dataUrl) => { saveSelfie(dataUrl); setBooth(false); }}/>;
+  }
+
   if (hero === null) {
     return <section className="chase-select glass" aria-labelledby="select-heading">
       <p className="eyebrow">Choose your player</p>
       <h2 id="select-heading">Who&rsquo;s collecting the confetti?</h2>
-      <p>The other two will be right behind you.</p>
-      <div className="chase-roster">{TEAM.map((member, i) => <button type="button" key={member.src} className="chase-pick glass" onClick={() => start(i)} aria-label={`Play as ${member.name}`}>
+      <p>Two of the others will be right behind you.</p>
+      <div className="chase-roster">{roster.map((member, i) => <button type="button" key={member.name} className="chase-pick glass" onClick={() => start(i)} aria-label={`Play as ${member.name}`}>
         <img src={member.src} alt="" width={120} height={120}/>
-      </button>)}</div>
+        {member.name === "You" && <span className="chase-pick-tag">You</span>}
+      </button>)}
+        {!selfie && <button type="button" className="chase-pick chase-add glass" onClick={() => setBooth(true)}>
+          <span aria-hidden="true">+</span>Add yourself
+        </button>}
+      </div>
+      {selfie && <div className="chase-selfie-tools">
+        <button type="button" onClick={() => setBooth(true)}>Retake selfie</button>
+        <button type="button" onClick={() => saveSelfie(null)}>Remove my photo</button>
+      </div>}
     </section>;
   }
 
