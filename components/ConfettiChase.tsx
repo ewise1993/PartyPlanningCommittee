@@ -90,7 +90,7 @@ export function ConfettiChase() {
     if (hud.status !== "over" || awardedRef.current) return;
     awardedRef.current = true;
     const tickets = Math.floor(hud.score / POINTS_PER_TICKET);
-    if (tickets > 0 && addTickets(tickets)) setEarned(tickets);
+    if (tickets > 0) void addTickets(tickets).then(success => { if (success) setEarned(tickets); });
   }, [hud.status, hud.score, addTickets]);
 
   useEffect(() => {

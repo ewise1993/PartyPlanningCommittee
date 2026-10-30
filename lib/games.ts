@@ -1,7 +1,6 @@
-// Add or rename games here; the home page and game routes share this registry.
-// Give a game a `blurb` once it is playable; the home card then shows it instead of "Coming soon".
-export const games = [
+// Shared catalogue order; add a blurb when a game is playable.
+export const games: ReadonlyArray<{slug:string;title:string;blurb?:string}> = [
   { slug: "game-1", title: "Confetti Chase", blurb: "Collect the confetti, dodge your teammates." },
   { slug: "game-2", title: "<game 2>" },
-  { slug: "game-3", title: "<game 3>" },
-] as const;
+  { slug: "traffic-jam", title: "Traffic Jam", blurb: "Slide the cars. Clear your way out." },
+];
