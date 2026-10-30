@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { games } from "@/lib/games";
-export function generateStaticParams() { return games.map(({ slug }) => ({ slug })); }
+// Games with a dedicated route under app/games/<slug>/ are served by that route instead.
+export function generateStaticParams() { return games.filter((game) => !game.ready).map(({ slug }) => ({ slug })); }
 export default async function GamePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const game = games.find((item) => item.slug === slug);

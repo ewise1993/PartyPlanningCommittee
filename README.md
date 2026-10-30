@@ -13,7 +13,7 @@ Open the localhost URL printed by Next.js. `npm run type-check` checks TypeScrip
 
 ## Shared pieces
 
-- `lib/games.ts`: game registry. Update titles and slugs here; home cards and placeholder routes read it.
+- `lib/games.ts`: game registry. Update titles, slugs, and `ready` flags here; home cards and placeholder routes read it.
 - `app/page.tsx`: home page / game catalogue.
 - `app/games/[slug]/page.tsx`: placeholder for every registered game; unknown slugs return 404. Teammates can add a dedicated route such as `app/games/game-1/page.tsx` when building their game.
 - `components/TicketProvider.tsx`: shared wallet provider and `useTickets()` hook. Mounted once in the root layout.
@@ -23,6 +23,20 @@ Open the localhost URL printed by Next.js. `npm run type-check` checks TypeScrip
 - `app/layout.tsx`: shared page shell, font, background, provider, and header.
 - `app/globals.css`: shared Hot Welcome typography, glass, geometry, and responsive styles.
 - `public/backgrounds/arcade.webp`, `public/fonts/safiro.woff2`: copied from the existing local Hot Welcome prototype assets.
+
+## Pinball (`/games/game-2`)
+
+A playable retro pinball machine built on the shared foundation. No extra dependencies.
+
+- `app/games/game-2/page.tsx`: route; renders the client component.
+- `components/pinball/PinballGame.tsx` + `PinballGame.module.css`: cabinet, scoreboard, controls, overlays, and the game loop. Awards tickets through `useTickets()` at game over.
+- `lib/pinball/engine.ts`: rules and simulation (three balls, scoring, combos, lane multiplier, drop bank, JACKPOT letters, ball save, stuck watchdog). Emits events the renderer and sound bank react to.
+- `lib/pinball/physics.ts`: ball vs. capsule/circle collisions with sub-stepping; moving flippers transfer surface velocity.
+- `lib/pinball/table.ts`: playfield geometry in table units (walls, bumpers, slingshots, targets, flippers, sensors, lamps).
+- `lib/pinball/render.ts`: canvas renderer with a cached static layer, lamp animation, particles, and messages.
+- `lib/pinball/sound.ts`: Web Audio synthesised effects with a persisted on/off toggle.
+
+Controls: Left/A and Right/D flip, hold and release Space to launch, Enter starts. Touch devices get on-screen buttons. High score persists in localStorage.
 
 ## Award or spend tickets in a game
 
