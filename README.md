@@ -42,3 +42,5 @@ const { tickets, ready, addTickets, spendTickets } = useTickets();
 Both functions return a boolean. Amounts must be nonnegative safe integers. Invalid amounts, insufficient funds, and overflow leave the balance unchanged. Disable wallet-dependent actions until `ready` is true. Ref-backed updates prevent rapid calls within one page from spending the same balance twice.
 
 The wallet starts at zero and persists in localStorage for this browser and origin. It is a simple prototype wallet, editable by the player, with no account, server validation, or concurrent-tab transaction guarantees. If browser storage is blocked it works in memory for the current session.
+
+The header catalogue button defaults to `http://localhost:3000/`, the local prototype catalogue. Set `NEXT_PUBLIC_PROTOTYPE_CATALOGUE_URL` to the hosted catalogue URL when deploying.
