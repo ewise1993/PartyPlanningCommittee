@@ -25,6 +25,8 @@
 
 body:has([data-arcade-theme=glass]){color:#2a0a1f;background:#fbf6f9}body:has([data-arcade-theme=glass]) .photo-background{background:radial-gradient(ellipse 50% 40% at 22% 30%,rgba(255,0,168,.14),transparent 70%),radial-gradient(ellipse 45% 45% at 80% 70%,rgba(255,0,168,.12),transparent 70%),linear-gradient(160deg,#fff,#f8f1f6 55%,#fff)}body:has([data-arcade-theme=glass]) .glass{--glass-background:rgba(255,255,255,.6);border-color:#ff00a84d;box-shadow:0 8px 24px rgba(160,0,110,.08)}body:has([data-arcade-theme=glass]) a:focus-visible{outline-color:#ff00a8}
 
-.game-icon{width:110px;height:110px;flex-shrink:0;margin:8px 0 24px;color:#fff}.site-header nav{font-size:var(--type-size-subheading);line-height:1.5;letter-spacing:.18em;text-transform:uppercase}.wallet>span{display:flex;align-items:center;gap:10px}
+.game-icon{object-fit:contain;width:140px;height:140px;flex-shrink:0;margin:8px 0 24px;color:#fff}.site-header nav{font-size:var(--type-size-subheading);line-height:1.5;letter-spacing:.18em;text-transform:uppercase}.wallet>span{display:flex;align-items:center;gap:10px}
 
 .shell{min-height:100svh;display:flex;flex-direction:column}.shell>footer{margin-top:auto;justify-content:center;text-align:center}
+
+.game-icon-wizard{transform:scale(1.15)}
