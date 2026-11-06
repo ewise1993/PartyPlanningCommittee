@@ -136,6 +136,8 @@ export class SoundBank {
         break;
       case "ballsave": this.arpeggio([1200, 1200, 1600], 0.07, 0.06, 0.16, "square"); break;
       case "drain": this.tone({ freq: 300, to: 70, type: "sawtooth", dur: 0.45, gain: 0.18 }); break;
+      case "tiltwarn": this.arpeggio([220, 220, 165], 0.12, 0.1, 0.2, "square"); break;
+      case "skillshot": this.arpeggio([784, 988, 1175, 1568, 1976], 0.06, 0.16, 0.2); this.noise({ dur: 0.3, gain: 0.15, filter: "bandpass", freq: 2500, to: 6000 }); break;
       case "nudge": this.tone({ freq: 80, to: 40, type: "triangle", dur: 0.08, gain: 0.3 }); this.noise({ dur: 0.04, gain: 0.15, filter: "lowpass", freq: 500 }); break;
       case "newball": this.tone({ freq: 440, dur: 0.08, gain: 0.14 }); this.tone({ freq: 660, dur: 0.12, gain: 0.14, delay: 0.1 }); break;
       case "start": this.arpeggio([392, 523, 659, 784], 0.08, 0.14, 0.18); break;

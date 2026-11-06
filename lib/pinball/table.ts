@@ -15,10 +15,11 @@ export const BALL_R = 9;
 export const CENTER_X = 181;        // centre of the playfield between the walls
 export const FLIPPER_PIVOT_X = 111; // left flipper pivot; the right one mirrors it
 
-// Hot Welcome palette: every role is a shade of electric fuchsia on clear acrylic.
+// Hot Welcome palette. Lamps glow electric fuchsia; the renderer adds deep plum for
+// contrast and chrome for metal. `violet` is the deep fuchsia used for shading.
 export const COLORS = {
-  pink: "#ff00a8", magenta: "#ff00a8", violet: "#ff33b8", cyan: "#ff4dc4",
-  amber: "#ff1aaf", lime: "#ff00a8", gold: "#ff00a8", blush: "#ffb3e3", coral: "#ff5cc6",
+  pink: "#ff0099", magenta: "#ff0099", violet: "#c4007a", cyan: "#ff0099",
+  amber: "#ff0099", lime: "#ff0099", gold: "#ff0099", blush: "#ffd6ed", coral: "#ff4fb4",
 };
 
 export type Wall = { a: Vec; b: Vec; r: number; e: number; oneWay?: Vec; hidden?: boolean; color?: string };

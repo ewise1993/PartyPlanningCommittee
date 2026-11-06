@@ -26,7 +26,9 @@ export type GameEvent =
   | { type: "combo"; count: number; x: number; y: number }
   | { type: "ballsave" }
   | { type: "drain"; bonus: number }
-  | { type: "nudge" }
+  | { type: "nudge"; manual?: boolean; x?: number; y?: number }
+  | { type: "tiltwarn" }
+  | { type: "skillshot"; points: number; x: number; y: number }
   | { type: "newball"; number: number }
   | { type: "gameover"; score: number; newHigh: boolean; tickets: number }
   | { type: "highscore" };
@@ -40,6 +42,7 @@ const PHYS_DT = 1 / 480;
 const BALL_SAVE_SECONDS = 5;
 const COMBO_WINDOW = 2;
 const PLUNGER_FACE = vec(0, -1);
+const SKILL_SHOT = 5000;
 const SCORE = { bumper: 100, sling: 50, lane: 300, inlane: 250, outlane: 1000, target: 750, drop: 500, bank: 5000, orbit: 1500, lanesComplete: 2000, jackpot: 50000 };
 
 export function ticketsForScore(score: number) { return Math.max(0, Math.min(500, Math.floor(score / 1500))); }
@@ -67,6 +70,9 @@ export class PinballEngine {
   dropResetAt = 0;
   autoLaunchAt = 0;
   launchedAt = -99;
+  /** True from launch until the ball scores anything; rolling a top lane first is a skill shot. */
+  skillLive = false;
+  private nudges: number[] = [];
   leftLane = false;
   lastBonus = 0;
   ticketsAwarded = 0;
@@ -112,6 +118,7 @@ export class PinballEngine {
     this.ball.vel = vec(0, -(600 + power * 1100));
     this.phase = "play";
     this.launchedAt = this.time;
+    this.skillLive = true;
     this.leftLane = false;
     this.slowTime = 0;
     this.events.push({ type: "launch", power });
@@ -127,6 +134,20 @@ export class PinballEngine {
     }
   }
 
+  /** Player bumps the cabinet. Quick repeated bumps earn a tilt warning (no penalty). */
+  nudgeTable(): boolean {
+    if (this.phase !== "play" || !this.ball || this.ball.pos.x > LANE_X) return false;
+    if (this.nudges.length && this.time - this.nudges[this.nudges.length - 1] < 0.45) return false;
+    this.nudges = this.nudges.filter((t) => this.time - t < 4);
+    this.nudges.push(this.time);
+    const b = this.ball;
+    b.vel.y = Math.min(b.vel.y, 0) - 300;
+    b.vel.x += (b.pos.x < 181 ? 1 : -1) * 90 + (Math.random() - 0.5) * 80;
+    this.events.push({ type: "nudge", manual: true, x: b.pos.x, y: b.pos.y });
+    if (this.nudges.length >= 3) { this.nudges = []; this.events.push({ type: "tiltwarn" }); }
+    return true;
+  }
+
   private rotateLanes(side: "left" | "right") {
     const l = this.lanes;
     if (side === "left") this.lanes = [l[1], l[2], l[0]]; else this.lanes = [l[2], l[0], l[1]];
@@ -137,6 +158,7 @@ export class PinballEngine {
   }
 
   private award(base: number, x?: number, y?: number, countsForCombo = true): number {
+    this.skillLive = false;
     let points = base * this.multiplier;
     if (countsForCombo) {
       this.combo = this.time - this.lastHitAt < COMBO_WINDOW ? this.combo + 1 : 1;
@@ -197,6 +219,7 @@ export class PinballEngine {
     if (this.jackpotUntil && this.time >= this.jackpotUntil) { this.jackpotUntil = 0; this.letters.fill(false); }
     if (this.dropResetAt && this.time >= this.dropResetAt) { this.dropResetAt = 0; for (const d of this.table.drops) d.down = false; }
     if (this.time - this.lastHitAt > COMBO_WINDOW) this.combo = 0;
+    if (this.skillLive && this.time - this.launchedAt > 4) this.skillLive = false;
     if (this.phase === "drain" && this.time >= this.drainUntil) this.nextBallOrEnd();
     if (this.autoLaunchAt && this.time >= this.autoLaunchAt) { this.autoLaunchAt = 0; if (this.phase === "ready") this.launch(0.85); }
 
@@ -309,7 +332,13 @@ export class PinballEngine {
       s.cooldownUntil = this.time + 0.4;
       switch (s.kind) {
         case "lane": {
+          const skill = this.skillLive;
           const points = this.award(SCORE.lane, s.c.x, s.c.y);
+          if (skill) {
+            const bonus = SKILL_SHOT * this.multiplier;
+            this.addScore(bonus);
+            this.events.push({ type: "skillshot", points: bonus, x: s.c.x, y: s.c.y });
+          }
           this.lanes[s.index] = true;
           this.events.push({ type: "lane", index: s.index, x: s.c.x, y: s.c.y, points });
           if (this.lanes.every(Boolean)) {
