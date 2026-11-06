@@ -1,5 +1,6 @@
 import Link from "next/link";
+import { GameIcon } from "@/components/GameIcon";
 import { games } from "@/lib/games";
 export default function Home() {
-  return <main><section className="hero"><h1>Arcade</h1></section><section aria-labelledby="games-heading"><div className="section-heading"><h2 id="games-heading" className="eyebrow">Game catalogue</h2></div><div className="game-grid">{games.length === 0 && <p className="empty-catalogue" role="status">No games available yet. Check back soon.</p>}{games.map((game) => <Link className="game-card glass" href={`/games/${game.slug}`} key={game.slug}><div className="arcade-art" aria-hidden="true"><span/><span/><span/><span/><span/></div><div className="card-copy"><p className="eyebrow">{game.blurb ? "Play now" : "Coming soon"}</p><h2>{game.title}</h2><p>{game.blurb ?? "A new game is on its way."}</p></div></Link>)}</div></section><Link href="/shop" className="shop-strip glass"><div><h2>The Prize Shop</h2><p>Your next reward is coming soon.</p></div></Link></main>;
+  return <main><section className="hero"><h1>Arcade</h1></section><section aria-label="Arcade games"><div className="game-grid">{games.length === 0 && <p className="empty-catalogue" role="status">No games available yet. Check back soon.</p>}{games.map((game) => <Link className="game-card glass" href={`/games/${game.slug}`} key={game.slug}><GameIcon slug={game.slug}/><div className="card-copy"><h2>{game.title}</h2><p>{game.blurb ?? "A new game is on its way."}</p></div></Link>)}</div></section></main>;
 }

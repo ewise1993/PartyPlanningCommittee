@@ -58,3 +58,13 @@ Both functions return a Promise<boolean>; await their result. Amounts must be no
 The wallet starts at zero and persists in localStorage for this browser and origin. It is a simple prototype wallet, editable by the player, with no account or server validation. Transactions use Web Locks and reload the current persisted balance inside the lock; storage events synchronize other tabs. If storage or Web Locks are unavailable, transactions fail without reporting success.
 
 The header catalogue button defaults to `http://localhost:3000/`, the local prototype catalogue. Set `NEXT_PUBLIC_PROTOTYPE_CATALOGUE_URL` to the hosted catalogue URL when deploying.
+
+## Pie prize shop
+
+`lib/pies.ts` defines 15 virtual pie prizes, ingredient notes, and relative ticket prices. The photos and their prompt/provenance notes live in `public/pies/`. `app/shop/page.tsx` provides redemption, affordability filtering, and the collected-pie list. `lib/prize-wallet.ts` uses catalogue prices and records the prize count together with the ticket deduction; TicketProvider persists that result under the wallet lock. `npm test` includes redemption tests. Pies are virtual prizes, and the original cutout photographs were AI-generated with the built-in ImageGen tool, visually inspired by the supplied Four & Twenty Blackbirds reference.
+
+## Traffic Jam progression
+
+Completing a level automatically records its 25-ticket award and generates the next arrangement in a Web Worker. Generation explores legal moves from solved boards and retains a verified solution path; it targets longer solutions and more vehicles as levels rise. The grid grows from 6×6 to 7×7 at level 6, 8×8 at level 11, and continues every five levels. Generation is bounded to keep the app responsive, so optimal difficulty can vary between arrangements.
+
+Progress, the level's initial arrangement, and undo history are stored in `traffic-jam:progress:v2`; prior single-puzzle progress migrates into level 1. Restart level keeps the level; Give Up returns to level 1 and cancels any in-flight generation. Rewards use stable level IDs, so replaying completed levels does not duplicate tickets. A failed wallet or generation operation leaves the solved level saved with a retry action.
